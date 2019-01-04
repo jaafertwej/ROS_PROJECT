@@ -17,62 +17,69 @@ from wander import SearchTags
 import roslaunch
 
 
-# class Initializing(State):
-
-#     def __init__(self):
-
-#         State.__init__(self, outcomes=['success', 'failed'])
-#         self.choice = 0
-#         print 'Start Initializing...'
-
-#     def execute(self, userdata):
-
-
-#         print 'Finding the initial point...'
-#         try:
-#             searchObject = SearchTags()
-#             searchObject.setChoice(self.choice)
-#             while not rospy.is_shutdown():
-#                 print(searchObject.foundTag)
-#                 rospy.sleep(1)
-#                 if searchObject.foundTag:
-#                     break
-
-#             # Run the Follower
-#         except rospy.ROSInterruptException:
-#             rospy.loginfo("AR Tag Tracker node terminated.")
-            
-
-#         success = True
-#         if success:
-#             rospy.loginfo("Robot is Localized")
-#             return 'success'
-#         else:
-#             return 'failed'
-
-
-class Loading(State):
+class Localizing(State):
 
     def __init__(self):
 
         State.__init__(self, outcomes=['success', 'failed'])
-        self.choice = 0
-        print 'Start Moving to Loading area'
+        self.goNext = False
+
+        print 'Start Localizing state'
 
     def execute(self, userdata):
-
+        pub = rospy.Publisher(
+            'initialpose', PoseWithCovarianceStamped)
         print 'Finding the initial point...'
         try:
             searchObject = SearchTags()
-            searchObject.setChoice(self.choice)
+            # rospy.spin()
             while not rospy.is_shutdown():
                 rospy.sleep(1)
                 if searchObject.foundTag:
                     break
-
-            # Run the Follower
+            print('success')
+            print('jaafer123')
+            self.goNext = searchObject.foundTag
         except rospy.ROSInterruptException:
             rospy.loginfo("AR Tag Tracker node terminated.")
+        if self.goNext:
+            try:
+                print('asdasfkasdjfg')
+                poseObject = TagsCOG()
+                while not rospy.is_shutdown():
+                    rospy.sleep(1)
+                    self.robotPose = poseObject.getPose()
+                    if self.robotPose is not None:
+                        break
+                # rospy.spin()
+                
+            except rospy.ROSInterruptException:
+                rospy.loginfo("AR Tag Tracker node terminated.")
+
+        # launch.shutdown()
+        rospy.sleep(4)
+
+        pose = PoseWithCovarianceStamped()
+        pose.header.frame_id = "map"
+        pose.pose.pose.position.x = self.robotPose.position.x
+        pose.pose.pose.position.y = self.robotPose.position.y
+        pose.pose.pose.position.z = self.robotPose.position.z
+        pose.pose.covariance = [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891945200942]
+
+        pose.pose.pose.orientation.x = 0
+        pose.pose.pose.orientation.y = 0
+        pose.pose.pose.orientation.z = self.robotPose.orientation.z
+        pose.pose.pose.orientation.w = self.robotPose.orientation.y
+
+        rospy.loginfo(pose)
+        print(pose)
+        rospy.sleep(1)
+        
+        while not rospy.is_shutdown():
+            pub.publish(pose)
+            print('jaafer5959598595959')
+            rospy.sleep(1)
             
 
         success = True
@@ -83,35 +90,97 @@ class Loading(State):
             return 'failed'
 
 
+class Initializing(State):
+
+    def __init__(self):
+
+        State.__init__(self, outcomes=['success', 'failed'])
+
+        # Initial pose
+        self.position = {'x': 1.34, 'y': 2.15}
+        self.quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': -0.69, 'r4': 0.72}
+
+        print 'Start Initializing...'
+
+    def execute(self, userdata):
+
+        navigator = GoToPose()
+
+        print 'Moving To Initial pose'
+
+        rospy.loginfo("Go to (%s, %s) pose",
+                      self.position['x'], self.position['y'])
+
+        success = navigator.goto(self.position, self.quaternion)
+
+        if success:
+            rospy.loginfo("Reached the Initial pose")
+            return 'success'
+        else:
+            return 'failed'
+
+
+class Loading(State):
+
+    def __init__(self):
+
+        State.__init__(self, outcomes=['success', 'failed'])
+
+        # Loading area pose
+        self.position = {'x': -0.71, 'y': 1.75}
+        self.quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': 1.00, 'r4': 0.00}
+
+        print 'Start Moving to Loading area'
+
+    def execute(self, userdata):
+
+        navigator = GoToPose()
+
+        print 'Moving To Loading area'
+
+        rospy.loginfo("Go to (%s, %s) pose",
+                      self.position['x'], self.position['y'])
+
+        success = navigator.goto(self.position, self.quaternion)
+
+        if success:
+            rospy.loginfo("Reached the Loading area")
+            print 'Loading...'
+            # Wait for 10 seconds
+            rospy.sleep(10.)
+            return 'success'
+        else:
+            return 'failed'
+
 
 class Unloading(State):
 
     def __init__(self):
 
         State.__init__(self, outcomes=['success', 'failed'])
-        self.choice = 1
+
+        # Unloading area pose
+        self.position = {'x': 2.29, 'y': 4.20}
+        self.quaternion = {'r1': 0.000, 'r2': 0.000, 'r3': 0.00, 'r4': 1.00}
+
         print 'Start Moving to Unloading area'
 
     def execute(self, userdata):
 
+        navigator = GoToPose()
 
-        print 'Finding the initial point...'
-        try:
-            searchObject = SearchTags()
-            searchObject.setChoice(self.choice)
-            while not rospy.is_shutdown():
-                rospy.sleep(1)
-                if searchObject.foundTag:
-                    break
+        print 'Reached the Unloading area'
 
-            # Run the Follower
-        except rospy.ROSInterruptException:
-            rospy.loginfo("AR Tag Tracker node terminated.")
-            
+        rospy.loginfo("Go to (%s, %s) pose",
+                      self.position['x'], self.position['y'])
 
-        success = True
+        success = navigator.goto(self.position, self.quaternion)
+
         if success:
-            rospy.loginfo("Robot is Localized")
+            rospy.loginfo("Reached the Unloading area")
+            print 'Unloading...'
+            # Wait for 10 seconds
+            rospy.sleep(10.)
             return 'success'
         else:
             return 'failed'
@@ -120,7 +189,7 @@ class Unloading(State):
 
 if __name__ == '__main__':
 
-    rospy.init_node('nav_test', anonymous=False)
+    rospy.init_node('map_based', anonymous=False)
 
     StateGoal = StateMachine(outcomes=['success'])
 
