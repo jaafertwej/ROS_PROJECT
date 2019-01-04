@@ -1,0 +1,10 @@
+<launch>
+	<include file="$(find rbx1_bringup)/bringup/turtlebot_minimal_create.launch"/>
+
+	<include file="$(find rbx1_bringup)/bringup/turtlebot_fake_laser_freenect.launch"/>
+
+	<include file="$(find rbx2_ar_tags)/launch/ar_large_markers_kinect.launch"/>
+
+</launch>
+
+
