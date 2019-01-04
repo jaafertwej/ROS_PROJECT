@@ -16,6 +16,14 @@ To Launch Map Based Navigation  :
 ```
 roslaunch map_based.launch
  OR
+python map_based/go_goal.py
+```
+
+
+To Launch Behavior Based Navigation  :
+```
+roslaunch behavior_based.launch
+ OR
 python map_based/wander.py
 ```
 
