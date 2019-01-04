@@ -5,7 +5,7 @@ The repository contains the work done as part of the Robotics module For master 
 
 
 
-![Map based Vs Behavior-based navigation 1.](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/map_based/map_behave.png)
+![Map based Vs Behavior-based navigation 1.](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/behavior_based/map_behave.png)
 
 
 
@@ -13,7 +13,7 @@ Map based Vs Behavior-based navigation [1].
 
 
 
-[![DEMO](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/map_based/snapshot.jpg)](https://youtu.be/BLybKmHQiwA "DEMO")
+[![DEMO](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/behavior_based/snapshot.jpg)](https://youtu.be/BLybKmHQiwA "DEMO")
 
 
 
