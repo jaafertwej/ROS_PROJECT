@@ -28,7 +28,6 @@ python map_based/wander.py
 ```
 
 
-To Launch Behav
 [![DEMO](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/behavior_based/snapshot.jpg)](https://youtu.be/BLybKmHQiwA "DEMO")
 
 
