@@ -186,21 +186,16 @@ class Unloading(State):
             return 'failed'
 
 
+
 if __name__ == '__main__':
 
-    rospy.init_node('nav_test', anonymous=False)
+    rospy.init_node('map_based', anonymous=False)
 
     StateGoal = StateMachine(outcomes=['success'])
 
     with StateGoal:
 
-        StateMachine.add('Localizing', Localizing(), transitions={
-                         'success': 'Initializing', 'failed': 'Localizing'})
-        StateMachine.add('Initializing', Initializing(), transitions={
-                         'success': 'Loading', 'failed': 'Initializing'})
-        StateMachine.add('Loading', Loading(), transitions={
-                         'success': 'Unloading', 'failed': 'Initializing'})
-        StateMachine.add('Unloading', Unloading(), transitions={
-                         'success': 'Loading', 'failed': 'Initializing'})
+        StateMachine.add('Loading', Loading(), transitions={'success': 'Unloading', 'failed': 'Loading'})
+        StateMachine.add('Unloading', Unloading(), transitions={'success': 'Loading', 'failed': 'Unloading'})
 
     StateGoal.execute()

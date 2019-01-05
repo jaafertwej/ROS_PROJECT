@@ -14,7 +14,6 @@ import numpy as np
 
 
 
-
 class SearchTags():
     def __init__(self):
         self.g_range_ahead = 1 # anything to start
@@ -24,12 +23,11 @@ class SearchTags():
         self.state_change_time = rospy.Time.now()
         self.driving_forward = True
         self.rate = rospy.Rate(10)
+        print('jaafer')
         self.foundTag = False
         
         self.tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
-
-        self.choice = 0
         
         rospy.Subscriber("ar_pose_marker", AlvarMarkers, self.get_tags)
         rospy.loginfo("Publishing combined tag COG on topic /target_pose...")
@@ -37,43 +35,20 @@ class SearchTags():
     def scan_callback(self, msg):
         cleanedList = [x for x in msg.ranges if str(x) != 'nan']
         self.g_range_ahead = min(cleanedList)
+        print(self.g_range_ahead)
 
-    def getId(self, msg):
-      ids = []
-      for i in range(len(msg)):
-        ids[i] = msg[i].id
-      return ids
-
-
+                
     def get_tags(self, msg):        
         # Get the number of markers
-        tag_ids = [0, 1]
         n = len(msg.markers)
-        myIdList = self.getId(msg.markers)
-        print(msg.markers)
+        print(n)
         # If no markers detected, just return
         if n == 0:
           self.foundTag = False
-          self.move_to_tag()
-
-        elif (tag_ids[self.choice] in myIdList):
-
-          self.foundTag = True
-          print('found Tag {}'.format(self.choice))
-          # rospy.signal_shutdown('Quit1')
-        else:
-          self.foundTag = False
-          self.move_to_tag()
-
-    def setChoice(self, choice):
-      self.choice = choice
-          
-
-
-    def move_to_tag(self):
           i = 0
           while not rospy.is_shutdown():
             i = i + 1
+            print(i)
             if i > 10:
               break
             if self.driving_forward:
@@ -96,5 +71,23 @@ class SearchTags():
               twist.angular.z = .5
             self.cmd_vel_pub.publish(twist)
             self.rate.sleep()
+        else:
+          self.foundTag = True
+          print('found Tag')
+          # rospy.signal_shutdown('Quit1')
+          return
 
+
+  
+# if __name__ == '__main__':
+#     try:
+#         searchObject = SearchTags()
+#         print(searchObject.foundTag)
+#         rospy.spin()
+#         print('success')
+#         print(searchObject.foundTag)
+
+
+#     except rospy.ROSInterruptException:
+#         rospy.loginfo("AR Tag Tracker node terminated.")
 

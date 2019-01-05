@@ -1,7 +1,0 @@
-<launch>
-	<include file="$(find turtlebot_navigation)/launch/amcl_demo.launch">
-		<arg name="map" value="/home/turtlebot/maps/my_map.yaml"/>
-	</include>
-	<include file="$(find rbx2_ar_tags)/launch/ar_large_markers_kinect.launch"/>
-
-</launch>
