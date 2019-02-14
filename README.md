@@ -54,7 +54,7 @@ roslaunch behavior_based.launch
 python behavior_based/wander.py
 ```
 
-
+# Video of the Demo
 [![DEMO](https://github.com/ElJAZRY/ROS_PROJECT/blob/master/behavior_based/snapshot.jpg)](https://youtu.be/BLybKmHQiwA "DEMO")
 
 
